@@ -54,6 +54,7 @@ jobs:
           name: c-apps-windows
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/external/bin
+          check_artifacts: true
           search_artifacts: true
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -106,6 +107,7 @@ jobs:
           name: c-apps-linux
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/external
+          check_artifacts: true
           search_artifacts: true
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -158,6 +160,7 @@ jobs:
           name: c-apps-macos
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/external
+          check_artifacts: true
           search_artifacts: true
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
