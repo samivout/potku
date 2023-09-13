@@ -229,6 +229,7 @@ jobs:
           name: Potku-Windows
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/artifact
+          check_artifacts: true
           skip_unpack: true
           workflow_conclusion: 'in_progress'
       - name: Download Linux release artifact
@@ -237,6 +238,7 @@ jobs:
           name: Potku-Linux
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/artifact
+          check_artifacts: true
           skip_unpack: true
           workflow_conclusion: 'in_progress'
       - name: Download macOS release artifact
@@ -245,6 +247,7 @@ jobs:
           name: Potku-macOS
           workflow: version_bump.yml
           path: ${{runner.workspace}}/potku/artifact
+          check_artifacts: true
           skip_unpack: true
           workflow_conclusion: 'in_progress'
       - name: Create prerelease
