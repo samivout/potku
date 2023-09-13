@@ -15,7 +15,7 @@ jobs:
         run: |
           mkdir -p ${{runner.workspace}}/artifact
       - name: Download C artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2.27.0
         with:
           name: c-apps-windows
           workflow: version_bump.yml
