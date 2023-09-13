@@ -252,11 +252,11 @@ jobs:
           workflow_conclusion: 'in_progress'
       - name: Create prerelease
         if: steps.pre_release.outputs.pre_release == 'true'
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_releases_tag: ${{ steps.get_content.outputs.version }}
-          release_name: Potku ${{ steps.get_content.outputs.version }}
+          automatic_release_tag: ${{ steps.get_content.outputs.version }}
+          title: Potku ${{ steps.get_content.outputs.version }}
           draft: false
           prerelease: true
           files: |
@@ -265,7 +265,7 @@ jobs:
             ${{runner.workspace}}/potku/artifact/Potku-macOS.zip
       - name: Create release
         if: steps.pre_release.outputs.pre_release == 'false'
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ steps.get_content.outputs.version }}
