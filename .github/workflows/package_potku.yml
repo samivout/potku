@@ -5,40 +5,8 @@ on:
   workflow_call:
 
 jobs:
-  create_release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version_numebr: ${{ steps.get_content.outputs.version }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-      - name: Read version file
-        id: get_content
-        run: |
-          cd ${{runner.workspace}}/potku
-          echo "version=$(awk 'NR==1' version.txt)" >> $GITHUB_OUTPUT
-      - name: Check for pre-release
-        id: pre_release
-        run: |
-          if [[ ${{ steps.get_content.outputs.version }} =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*) ]]; then
-            echo "pre_release=false" >> $GITHUB_OUTPUT
-          else
-            echo "pre_release=true" >> $GITHUB_OUTPUT
-          fi
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_content.outputs.version }}
-          release_name: Potku ${{ steps.get_content.outputs.version }}
-          draft: false
-          prerelease: ${{ steps.pre_release.outputs.pre_release }}
   
   package_windows:
-    needs: create_release
     runs-on: windows-latest
     defaults:
       run:
@@ -95,7 +63,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'Potku-${{ needs.create_release.outputs.version }}-Windows.zip'
+          filename: 'Potku-Windows.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
       - name: Upload Windows build to release
@@ -104,14 +72,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{runner.workspace}}/potku/dist/Potku-${{ needs.create_release.outputs.version }}-Windows.zip
+          asset_path: ${{runner.workspace}}/potku/dist/Potku-Windows.zip
           asset_name: Potku-Windows.zip
           asset_content_type: application/zip
+      - name: Archive Windows release
+        uses: actions/upload-artifact@v3
+        with:
+          name: Potku-Windows
+          path: ${{runner.workspace}}/potku/dist/Potku-Windows.zip
       
           
   package_linux:
     runs-on: ubuntu-latest
-    needs: create_release
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -165,7 +137,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'Potku-${{ needs.create_release.outputs.version }}-Linux.zip'
+          filename: 'Potku-Linux.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
       - name: Upload Linux build to release
@@ -177,10 +149,14 @@ jobs:
           asset_path: ${{runner.workspace}}/potku/dist/Potku-${{ needs.create_release.outputs.version }}-Linux.zip
           asset_name: Potku-Linux.zip
           asset_content_type: application/zip
+      - name: Archive Linux release
+        uses: actions/upload-artifact@v3
+        with:
+          name: Potku-Linux
+          path: ${{runner.workspace}}/potku/dist/Potku-Linux.zip
   
   package_macos:
     runs-on: macos-latest
-    needs: create_release
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -234,7 +210,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'Potku-${{ needs.create_release.outputs.version }}-macOS.zip'
+          filename: 'Potku-macOS.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
       - name: Upload MacOS build to release
@@ -243,6 +219,84 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{runner.workspace}}/potku/dist/Potku-${{ needs.create_release.outputs.version }}-macOS.zip
+          asset_path: ${{runner.workspace}}/potku/dist/Potku-macOS.zip
           asset_name: Potku-macOS.zip
           asset_content_type: application/zip
+      - name: Archive macOS release
+        uses: actions/upload-artifact@v3
+        with:
+          name: Potku-macOS
+          path: ${{runner.workspace}}/potku/dist/Potku-macOS.zip
+
+  create_release:
+    needs: [package_windows, package_linux, package_macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      - name: Read version file
+        id: get_content
+        run: |
+          cd ${{runner.workspace}}/potku
+          echo "version=$(awk 'NR==1' version.txt)" >> $GITHUB_OUTPUT
+      - name: Check for pre-release
+        id: pre_release
+        run: |
+          if [[ ${{ steps.get_content.outputs.version }} =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*) ]]; then
+            echo "pre_release=false" >> $GITHUB_OUTPUT
+          else
+            echo "pre_release=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Make directory
+        run: |
+          mkdir -p ${{runner.workspace}}/potku/artifact
+      - name: Download Windows release artifact
+        uses: dawidd6/action-download-artifact@v2.27.0
+        with:
+          name: Potku-Windows
+          workflow: version_bump.yml
+          path: ${{runner.workspace}}/potku/artifact
+          skip_unpack: true
+          workflow_conclusion: 'in_progress'
+      - name: Download Linux release artifact
+        uses: dawidd6/action-download-artifact@v2.27.0
+        with:
+          name: Potku-Linux
+          workflow: version_bump.yml
+          path: ${{runner.workspace}}/potku/artifact
+          skip_unpack: true
+          workflow_conclusion: 'in_progress'
+      - name: Download macOS release artifact
+        uses: dawidd6/action-download-artifact@v2.27.0
+        with:
+          name: Potku-macOS
+          workflow: version_bump.yml
+          path: ${{runner.workspace}}/potku/artifact
+          skip_unpack: true
+          workflow_conclusion: 'in_progress'
+      - name: Create prerelease
+        if: steps.pre_release.outputs.pre_release == 'true'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_releases_tag: ${{ steps.get_content.outputs.version }}
+          release_name: Potku ${{ steps.get_content.outputs.version }}
+          draft: false
+          prerelease: true
+          files: |
+            ${{runner.workspace}}/potku/artifact/Potku-Linux.zip
+            ${{runner.workspace}}/potku/artifact/Potku-Windows.zip
+            ${{runner.workspace}}/potku/artifact/Potku-macOS.zip
+      - name: Create release
+        if: steps.pre_release.outputs.pre_release == 'false'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_releases_tag: ${{ steps.get_content.outputs.version }}
+          release_name: Potku ${{ steps.get_content.outputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            ${{runner.workspace}}/potku/artifact/Potku-Linux.zip
+            ${{runner.workspace}}/potku/artifact/Potku-Windows.zip
+            ${{runner.workspace}}/potku/artifact/Potku-macOS.zip
