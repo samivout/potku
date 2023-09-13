@@ -66,15 +66,6 @@ jobs:
           filename: 'Potku-Windows.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
-      - name: Upload Windows build to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{runner.workspace}}/potku/dist/Potku-Windows.zip
-          asset_name: Potku-Windows.zip
-          asset_content_type: application/zip
       - name: Archive Windows release
         uses: actions/upload-artifact@v3
         with:
@@ -140,15 +131,6 @@ jobs:
           filename: 'Potku-Linux.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
-      - name: Upload Linux build to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{runner.workspace}}/potku/dist/Potku-${{ needs.create_release.outputs.version }}-Linux.zip
-          asset_name: Potku-Linux.zip
-          asset_content_type: application/zip
       - name: Archive Linux release
         uses: actions/upload-artifact@v3
         with:
@@ -213,15 +195,6 @@ jobs:
           filename: 'Potku-macOS.zip'
           directory: ${{runner.workspace}}/potku/dist
           path: potku
-      - name: Upload MacOS build to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ${{runner.workspace}}/potku/dist/Potku-macOS.zip
-          asset_name: Potku-macOS.zip
-          asset_content_type: application/zip
       - name: Archive macOS release
         uses: actions/upload-artifact@v3
         with:
