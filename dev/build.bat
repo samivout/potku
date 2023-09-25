@@ -4,7 +4,7 @@ cd ..\
 set ROOT_DIR=%cd%
 set EXT_DIR=%ROOT_DIR%\external
 
-@REM TODO take cmake option -G as command line parameter.
+@REM TODO take cmake option -G as command line parameter. Test change.
 
 if "%1"=="" (
 	echo Using default toolchain file
