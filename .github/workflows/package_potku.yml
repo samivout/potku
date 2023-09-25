@@ -6,73 +6,6 @@ on:
 
 jobs:
 
-  package_windows:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: cmd
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-        with:
-          submodules: recursive
-      - name: Download old C artifact
-        uses: dawidd6/action-download-artifact@246dbf436b23d7c49e21a7ab8204ca9ecd1fe615 # v2.27.0
-        with:
-          name: c-apps-windows
-          workflow: version_bump.yml
-          path: ${{runner.workspace}}/potku/external/bin
-          check_artifacts: true
-          search_artifacts: true
-          if_no_artifact_found: ignore
-      - name: Check file existence
-        id: check_files
-        uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2
-        with:
-          files: "${{runner.workspace}}/potku/external/bin/mcerd.exe"
-      - name: Download current C artifact
-        if: steps.check_files.outputs.files_exists == 'false'
-        uses: dawidd6/action-download-artifact@246dbf436b23d7c49e21a7ab8204ca9ecd1fe615 # v2.27.0
-        with:
-          name: c-apps-windows
-          workflow: version_bump.yml
-          path: ${{runner.workspace}}/potku/external/bin
-          check_artifacts: true
-          search_artifacts: true
-          workflow_conclusion: 'in_progress'
-      - name: Set up Python 3.10
-        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.10'
-      - name: Collect external files and package Potku
-        run: |
-          cd ${{runner.workspace}}/potku
-          pip install pipenv
-          pipenv install
-          cd ${{runner.workspace}}/potku/dev
-          for /f %%A in ('pipenv run python external_file_manager.py fetch') do set "fails=%%A"
-          if "%fails%" neq "0" (
-            echo %fails% external files failed to download.
-            exit /b 1
-          )
-          cd ${{runner.workspace}}/potku
-          pipenv run pip install pyinstaller
-          pipenv run pyinstaller potku.spec
-      - name: Create archive
-        uses: thedoctor0/zip-release@a24011d8d445e4da5935a7e73c1f98e22a439464 # 0.7.1
-        with:
-          type: 'zip'
-          filename: 'Potku-Windows.zip'
-          directory: ${{runner.workspace}}/potku/dist
-          path: potku
-      - name: Archive Windows release
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
-        with:
-          name: Potku-Windows
-          path: ${{runner.workspace}}/potku/dist/Potku-Windows.zip
-
-
   package_linux:
     runs-on: ubuntu-latest
     steps:
@@ -136,6 +69,7 @@ jobs:
         with:
           name: Potku-Linux
           path: ${{runner.workspace}}/potku/dist/Potku-Linux.zip
+
 
   package_macos:
     runs-on: macos-latest
@@ -201,8 +135,9 @@ jobs:
           name: Potku-macOS
           path: ${{runner.workspace}}/potku/dist/Potku-macOS.zip
 
+
   create_release:
-    needs: [package_windows, package_linux, package_macos]
+    needs: [package_linux, package_macos]
     runs-on: ubuntu-latest
     steps:
       - name: Git checkout
@@ -223,15 +158,6 @@ jobs:
       - name: Make directory
         run: |
           mkdir -p ${{runner.workspace}}/potku/artifact
-      - name: Download Windows release artifact
-        uses: dawidd6/action-download-artifact@246dbf436b23d7c49e21a7ab8204ca9ecd1fe615 # v2.27.0
-        with:
-          name: Potku-Windows
-          workflow: version_bump.yml
-          path: ${{runner.workspace}}/potku/artifact
-          check_artifacts: true
-          skip_unpack: true
-          workflow_conclusion: 'in_progress'
       - name: Download Linux release artifact
         uses: dawidd6/action-download-artifact@246dbf436b23d7c49e21a7ab8204ca9ecd1fe615 # v2.27.0
         with:
@@ -261,7 +187,6 @@ jobs:
           prerelease: true
           files: |
             ${{runner.workspace}}/potku/artifact/Potku-Linux.zip
-            ${{runner.workspace}}/potku/artifact/Potku-Windows.zip
             ${{runner.workspace}}/potku/artifact/Potku-macOS.zip
       - name: Create release
         if: steps.pre_release.outputs.pre_release == 'false'
@@ -274,5 +199,4 @@ jobs:
           prerelease: false
           files: |
             ${{runner.workspace}}/potku/artifact/Potku-Linux.zip
-            ${{runner.workspace}}/potku/artifact/Potku-Windows.zip
             ${{runner.workspace}}/potku/artifact/Potku-macOS.zip

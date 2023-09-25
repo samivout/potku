@@ -7,7 +7,7 @@ OBJS=coinc.o
 PROG=coinc
 
 $(PROG): $(OBJS)
-	$(CC) $(LDFLAGS) -o $(PROG) $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROG) $(OBJS)
 	
 all: coinc
 

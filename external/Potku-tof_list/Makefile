@@ -21,7 +21,7 @@ OBJS=tof_list.o
 PROG=tof_list
 
 $(PROG): $(OBJS)
-	$(CC) $(LDFLAGS) -o $(PROG) $(OBJS) $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROG) $(OBJS) $(LIB)
 
 clean:
 	rm -f $(OBJS) $(PROG) .depend

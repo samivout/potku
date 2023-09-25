@@ -8,6 +8,7 @@ LIBS := $(addprefix $(LIB_DIR), libgsto.a)
 INCS := $(addprefix $(INC_DIR), gsto_masses.h libgsto.h)
 
 all:
+	+$(MAKE) clean -C Potku-gsto
 	+$(MAKE) -C Potku-gsto
 	+$(MAKE) clean -C Potku-tof_list
 	+$(MAKE) -C Potku-tof_list
