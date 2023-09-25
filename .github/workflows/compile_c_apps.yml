@@ -68,7 +68,6 @@ jobs:
     - name: Build linux executables
       run: |
         sudo apt-get install -y libgsl27 libgsl-dev
-        sudo apt-get install build-essintial
         cd ${{runner.workspace}}/potku/dev
         ./build.sh
     - name: Archive linux executables
