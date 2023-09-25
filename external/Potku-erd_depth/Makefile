@@ -17,7 +17,6 @@ LIB+= -lm
 LDFLAGS = -g -L$(LIBDIR)
 
 OBJS = erd_depth.o
-
 PROG = erd_depth
 
 $(PROG): $(OBJS)
@@ -28,7 +27,7 @@ clean:
 
 depend .depend:
 	$(CC) -I$(INCDIR) -MM *.c > .depend
-include .depend
+	include .depend
 
 install:
 	install -d $(INSTALLDIR) 
