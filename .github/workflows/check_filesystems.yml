@@ -14,5 +14,4 @@ jobs:
           submodules: recursive
       - name: Build linux executables
         run: |
-          cd /usr/lib
-          tree
+          dpkg -S libgsl.so.27
