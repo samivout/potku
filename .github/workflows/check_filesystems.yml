@@ -14,5 +14,6 @@ jobs:
           submodules: recursive
       - name: Build linux executables
         run: |
-          whereis libgsl27
-          cd ${{runner.workspace}}/../../..
+          cp /usr/local/lib/libgsl.so.27 ${{runner.workspace}}/potku/external
+          cd ${{runner.workspace}}/potku/external
+          tree
