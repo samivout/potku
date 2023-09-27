@@ -14,7 +14,5 @@ jobs:
           submodules: recursive
       - name: Build linux executables
         run: |
-          sudo apt-get install -y libgsl27 libgsl-dev
-          sudo apt-get install tree
+          whereis libgsl27
           cd ${{runner.workspace}}/../../..
-          tree
