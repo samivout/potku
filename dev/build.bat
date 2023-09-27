@@ -4,7 +4,7 @@ cd ..\
 set ROOT_DIR=%cd%
 set EXT_DIR=%ROOT_DIR%\external
 
-@REM TODO take cmake option -G as command line parameter. Test change.
+@REM TODO take cmake option -G as command line parameter.
 
 if "%1"=="" (
 	echo Using default toolchain file
@@ -40,5 +40,8 @@ if "%1"=="" (
 	cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=%1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%EXT_DIR% -DCMAKE_INSTALL_PREFIX=%EXT_DIR% .. || EXIT /b 1
 )
 msbuild INSTALL.vcxproj /property:Configuration=Release || EXIT /b 1
+
+copy "%VCPKG_ROOT%\installed\x64-windows\bin\gsl.dll" "%EXT_DIR%\bin"
+copy "%VCPKG_ROOT%\installed\x64-windows\bin\gslcblas.dll" "%EXT_DIR%\bin"
 
 cd %CUR_DIR%
