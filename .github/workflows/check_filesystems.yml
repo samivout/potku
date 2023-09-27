@@ -1,0 +1,20 @@
+name: check_filesystem
+
+on:
+  workflow_dispatch:
+  
+jobs:
+
+  build_linux:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+        with:
+          submodules: recursive
+      - name: Build linux executables
+        run: |
+          sudo apt-get install -y libgsl27 libgsl-dev
+          sudo apt-get install tree
+          cd ${{runner.workspace}}
+          tree
