@@ -40,3 +40,21 @@ else
 fi
 make
 make install
+
+os_name=$(uname -s)
+if [ "$os_name" = "Linux" ]; then
+    dpkg_gsl=$(dpkg -S libgsl.so.27)
+    path_to_gsl=$(echo "$dpkg_gsl" | awk -F: '{print $2}')
+    dpkg_gslcblas=$(dpkg -S libgslcblas.so.0)
+    path_to_gslcblas=$(echo "$dpkg_gslcblas" | awk -F: '{print $2}')
+fi
+
+if [ "$os_name" = "Darwin" ]; then
+    path_to_gsl=$(find /usr -name "libgsl.27.dylib")
+    path_to_gslcblas=$(find /usr -name "libgslcblas.0.dylib")
+fi
+
+cp "$path_to_gsl" "$EXT_DIR/lib"
+cp "$path_to_gslcblas" "$EXT_DIR/lib"
+
+    
