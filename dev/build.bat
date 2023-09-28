@@ -41,8 +41,8 @@ if "%1"=="" (
 )
 msbuild INSTALL.vcxproj /property:Configuration=Release || EXIT /b 1
 
-echo %VCPKG_ROOT%
-copy "%VCPKG_ROOT%\installed\x64-windows\bin\gsl.dll" "%EXT_DIR%\bin"
-copy "%VCPKG_ROOT%\installed\x64-windows\bin\gslcblas.dll" "%EXT_DIR%\bin"
+@REM echo %VCPKG_ROOT%
+@REM copy "%VCPKG_ROOT%\installed\x64-windows\bin\gsl.dll" "%EXT_DIR%\bin"
+@REM copy "%VCPKG_ROOT%\installed\x64-windows\bin\gslcblas.dll" "%EXT_DIR%\bin"
 
 cd %CUR_DIR%
