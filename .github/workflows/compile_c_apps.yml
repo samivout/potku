@@ -85,8 +85,6 @@ jobs:
         set VCPKG_DEFAULT_TRIPLET x64-windows
         cd ${{runner.workspace}}\potku\repo\dev
         build.bat ${{ runner.workspace }}\potku\vcpkg\scripts\buildsystems\vcpkg.cmake
-        copy "${{ runner.workspace }}\potku\vcpkg\installed\x64-windows\bin\gsl.dll" "${{ runner.workspace }}\potku\repo\external\bin"
-        copy "${{ runner.workspace }}\potku\vcpkg\installed\x64-windows\bin\gslcblas.dll" "${{ runner.workspace }}\potku\repo\external\bin"
     - name: Archive windows executables
       uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
       with:
